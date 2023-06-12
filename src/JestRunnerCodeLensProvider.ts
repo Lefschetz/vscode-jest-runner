@@ -6,8 +6,8 @@ function getCodeLensForOption(range: Range, codeLensOption: CodeLensOption, full
   const titleMap: Record<CodeLensOption, string> = {
     run: 'Run',
     debug: 'Debug',
-    watch: 'Run --watch',
-    coverage: 'Run --coverage',
+    watch: 'Watch',
+    coverage: 'Coverage',
   };
   const commandMap: Record<CodeLensOption, string> = {
     run: 'extension.runJest',

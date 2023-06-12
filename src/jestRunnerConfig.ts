@@ -1,7 +1,14 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
-import { normalizePath, quote, validateCodeLensOptions, CodeLensOption, isNodeExecuteAbleFile } from './util';
+import {
+  normalizePath,
+  quote,
+  validateCodeLensOptions,
+  CodeLensOption,
+  isNodeExecuteAbleFile,
+  isGlobalBinInstalled,
+} from './util';
 
 export class JestRunnerConfig {
   /**
@@ -11,14 +18,16 @@ export class JestRunnerConfig {
   public get jestCommand(): string {
     // custom
     const jestCommand: string = vscode.workspace.getConfiguration().get('jestrunner.jestCommand');
+    const isShowUIMode = this.isShowUIMode;
+
+    if (isShowUIMode && isGlobalBinInstalled('debug-jest')) {
+      return 'debug-jest';
+    }
+
     if (jestCommand) {
       return jestCommand;
     }
 
-    // default
-    if (this.isYarnPnpSupportEnabled) {
-      return `yarn jest`;
-    }
     return `node ${quote(this.jestBinPath)}`;
   }
 
@@ -67,8 +76,7 @@ export class JestRunnerConfig {
       // Do not assume that jest is always installed at the root of the opened project, this is not the case
       // such as in multi-module projects.
       const pkg = path.join(currentFolderPath, 'package.json');
-      const jest = path.join(currentFolderPath, 'node_modules', 'jest');
-      if (fs.existsSync(pkg) && fs.existsSync(jest)) {
+      if (fs.existsSync(pkg)) {
         return currentFolderPath;
       }
       currentFolderPath = path.join(currentFolderPath, '..');
@@ -134,6 +142,20 @@ export class JestRunnerConfig {
     return null;
   }
 
+  public get watchOptions(): string[] | null {
+    const watchOptions = vscode.workspace.getConfiguration().get('jestrunner.watchOptions');
+    if (watchOptions) {
+      if (Array.isArray(watchOptions)) {
+        return watchOptions;
+      } else {
+        vscode.window.showWarningMessage(
+          'Please check your vscode settings. "jestrunner.watchOptions" must be an Array. '
+        );
+      }
+    }
+    return null;
+  }
+
   public get debugOptions(): Partial<vscode.DebugConfiguration> {
     const debugOptions = vscode.workspace.getConfiguration().get('jestrunner.debugOptions');
     if (debugOptions) {
@@ -152,7 +174,7 @@ export class JestRunnerConfig {
   public get isRunInExternalNativeTerminal(): boolean {
     const isRunInExternalNativeTerminal: boolean = vscode.workspace
       .getConfiguration()
-      .get('jestrunner.runInOutsideTerminal');
+      .get('jestrunner.runInExternalNativeTerminal');
     return isRunInExternalNativeTerminal ? isRunInExternalNativeTerminal : false;
   }
 
@@ -164,12 +186,15 @@ export class JestRunnerConfig {
     return [];
   }
 
-  public get isYarnPnpSupportEnabled(): boolean {
-    const isYarnPnp: boolean = vscode.workspace.getConfiguration().get('jestrunner.enableYarnPnpSupport');
-    return isYarnPnp ? isYarnPnp : false;
-  }
-  public get getYarnPnpCommand(): string {
-    const yarnPnpCommand: string = vscode.workspace.getConfiguration().get('jestrunner.yarnPnpCommand');
-    return yarnPnpCommand;
+  public get isShowUIMode(): boolean {
+    const { document } = vscode.window.activeTextEditor;
+    const text = document.getText();
+    const lines = text.split('\n').map((line) => line.trim());
+    for (const line of lines) {
+      if (line.includes('showUI') && !line.startsWith('//')) {
+        return true;
+      }
+    }
+    return false;
   }
 }

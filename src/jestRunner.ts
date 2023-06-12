@@ -131,7 +131,6 @@ export class JestRunner {
     const testName = currentTestName || this.findCurrentTestName(editor);
     const debugConfig = this.getDebugConfig(filePath, testName);
 
-    await this.goToCwd();
     await this.executeDebugCommand({
       config: debugConfig,
       documentUri: editor.document.uri,
@@ -163,19 +162,14 @@ export class JestRunner {
       console: 'integratedTerminal',
       internalConsoleOptions: 'neverOpen',
       name: 'Debug Jest Tests',
-      program: this.config.jestBinPath,
-      request: 'launch',
       type: 'node',
+      request: 'launch',
       cwd: this.config.cwd,
+      program: this.config.jestBinPath,
       ...this.config.debugOptions,
     };
 
     config.args = config.args ? config.args.slice() : [];
-
-    if (this.config.isYarnPnpSupportEnabled) {
-      config.args = ['jest'];
-      config.program = `.yarn/releases/${this.config.getYarnPnpCommand}`;
-    }
 
     const standardArgs = this.buildJestArgs(filePath, currentTestName, false);
     pushMany(config.args, standardArgs);
@@ -240,7 +234,7 @@ export class JestRunner {
   }
 
   private buildNativeTerminalCommand(toRun: string): string {
-    const command = `ttab -t 'jest-runner' "${toRun}"`;
+    const command = `ttab  -t 'jest-runner' -a iTerm2 "${toRun}"`;
     return command;
   }
 

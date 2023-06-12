@@ -100,3 +100,12 @@ export function isNodeExecuteAbleFile(filepath: string): boolean {
     return false;
   }
 }
+
+export function isGlobalBinInstalled(binName: string): boolean {
+  try {
+    execSync(`${binName} --help`);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
