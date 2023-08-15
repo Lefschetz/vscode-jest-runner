@@ -3,11 +3,11 @@
   "displayName": "Jest Runner",
   "description": "Simple way to run or debug a single (or multiple) tests from context-menu",
   "version": "0.4.66",
-  "publisher": "firsttris",
-  "author": "Tristan Teufel",
+  "publisher": "unknown",
+  "author": "unknow",
   "repository": {
     "type": "git",
-    "url": "https://github.com/firsttris/vscode-jest-runner.git"
+    "url": "https://github.com/Lefschetz/vscode-jest-runner.git"
   },
   "license": "MIT",
   "icon": "public/icon.png",
@@ -60,6 +60,16 @@
             "description": "Add CLI Options to the Jest Command e.g. https://jestjs.io/docs/en/cli",
             "scope": "window"
           },
+          "jestrunner.watchOptions": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string",
+              "description": "CLI Option used with watch mode"
+            },
+            "description": "Add CLI Options to the Jest Command e.g. https://jestjs.io/docs/en/cli",
+            "scope": "window"
+          },
           "jestrunner.jestCommand": {
             "type": "string",
             "default": "",
@@ -96,12 +106,6 @@
             "default": "**/*.{test,spec}.{js,jsx,ts,tsx}",
             "description": "CodeLens will be shown on files matching this pattern"
           },
-          "jestrunner.enableYarnPnpSupport": {
-            "type": "boolean",
-            "default": false,
-            "description": "Enable if you are using Yarn 2 with Plug'n'Play",
-            "scope": "window"
-          },
           "jestrunner.changeDirectoryToWorkspaceRoot": {
             "type": "boolean",
             "default": true,
@@ -112,12 +116,6 @@
             "type": "boolean",
             "default": false,
             "description": "Preserve focus on editor when running tests",
-            "scope": "window"
-          },
-          "jestrunner.yarnPnpCommand": {
-            "type": "string",
-            "default": "yarn-*.*js",
-            "description": "Command for debugging with Plug'n'Play",
             "scope": "window"
           }
         }

@@ -56,6 +56,9 @@ export function activate(context: vscode.ExtensionContext): void {
   const watchJest = vscode.commands.registerCommand(
     'extension.watchJest',
     async (argument: Record<string, unknown> | string) => {
+      if (config.watchOptions) {
+        return jestRunner.runCurrentTest(argument, ['--watch', ...config.watchOptions]);
+      }
       return jestRunner.runCurrentTest(argument, ['--watch']);
     }
   );

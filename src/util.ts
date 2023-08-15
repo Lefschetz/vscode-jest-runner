@@ -44,7 +44,7 @@ const QUOTES = {
 };
 
 export function resolveTestNameStringInterpolation(s: string): string {
-  const variableRegex = /(\${?[A-Za-z0-9_]+}?|%[psdifjo#%])/gi;
+  const variableRegex = /(\${?[A-Za-z0-9_.]+}?|%[psdifjo#%])/gi;
   const matchAny = '(.*?)';
   return s.replace(variableRegex, matchAny);
 }
@@ -111,4 +111,13 @@ export function updateTestNameIfUsingProperties(receivedTestName?: string) {
 
   const prototypePropertyRegex = /\w*\\.prototype\\./g;
   return testNameWithoutNameProperty.replace(prototypePropertyRegex, '');
+}
+
+export function isGlobalBinInstalled(binName: string): boolean {
+  try {
+    execSync(`${binName} --help`);
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
